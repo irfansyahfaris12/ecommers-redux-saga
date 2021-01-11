@@ -1,25 +1,106 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Switch, Route } from "react-router-dom";
+import "./default.scss";
+import { checkUserSession } from "./redux/User/user.actions";
 
-function App() {
+//component
+import AdminToolbar from './component/AdminToolbar';
+
+//hoc
+import WhithAuth from "./hoc/withAuth";
+import WhiteAdminAuth from "./hoc/withAdminAuth";
+
+//layout
+import MainLayout from "./Layout/MainLayout";
+import HomepageLayout from "./Layout/HomepageLayout";
+import AdminLayout from "./Layout/AdminLayout";
+
+//pages
+import Homepage from "./pages/Homepage";
+import Search from "./pages/Search";
+import Registration from "./pages/Registration";
+import Login from "./pages/Login";
+import Recovery from "./pages/Recovery";
+import Dashboard from "./pages/Dashboard";
+import Admin from "./pages/Admin";
+
+
+const App = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(checkUserSession())
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <AdminToolbar />
+      <Switch>
+        <Route
+          exact
+          path="/"
+          render={() => (
+            <HomepageLayout>
+              <Homepage />
+            </HomepageLayout>
+          )}
+        />
+        <Route
+          path="/search"
+          render={() => (
+            <MainLayout>
+              <Search />
+            </MainLayout>
+          )}
+        />
+        <Route
+          path="/registration"
+          render={() => (
+            <MainLayout>
+              <Registration />
+            </MainLayout>
+          )}
+        />
+        <Route
+          path="/login"
+          render={() => (
+            <MainLayout>
+              <Login />
+            </MainLayout>
+          )}
+        />
+        <Route
+          path="/recovery"
+          render={() => (
+            <MainLayout>
+              <Recovery />
+            </MainLayout>
+          )}
+        />
+        <Route
+          path="/admin"
+          render={() => (
+            <WhiteAdminAuth>
+            <AdminLayout>
+              <Admin />
+            </AdminLayout>
+            </WhiteAdminAuth>
+          )}
+        />
+        <Route
+          path="/dashboard"
+          render={() => (
+            <WhithAuth>
+              <MainLayout>
+                <Dashboard />
+              </MainLayout>
+            </WhithAuth>
+          )}
+        />
+      </Switch>
     </div>
   );
-}
+};
 
 export default App;

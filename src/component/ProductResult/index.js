@@ -1,8 +1,11 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router-dom";
 import { FetchProductStart } from "../../redux/Product/product.actions";
 import Product from "./Product";
-import './styles.scss'
+import FormSelect from "../Form/FormSelect";
+import LoadMore from "../LoadMore";
+import "./styles.scss";
 
 const mapState = ({ productData }) => ({
   product: productData.product,
@@ -10,16 +13,23 @@ const mapState = ({ productData }) => ({
 
 const ProductResult = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
+  const { filterType } = useParams();
   const { product } = useSelector(mapState);
 
-  useEffect(() => {
-    dispatch(
-      FetchProductStart()
-    )
-  }, []);
+  const { data, queryDoc, isLastPage } = product;
 
-  if (!Array.isArray(product)) return null;
-  if (product.length < 1) {
+  useEffect(() => {
+    dispatch(FetchProductStart({ filterType }));
+  }, [filterType]);
+
+  const handleFilters = (e) => {
+    const nextFilter = e.target.value;
+    history.push(`/search/${nextFilter}`);
+  };
+
+  if (!Array.isArray(data)) return null;
+  if (data.length < 1) {
     return (
       <div className="products">
         <p>no search result</p>
@@ -27,25 +37,62 @@ const ProductResult = () => {
     );
   }
 
+  const configFilters = {
+    defalutValue: filterType,
+    options: [
+      {
+        name: "show all",
+        value: "",
+      },
+      {
+        name: "Mens",
+        value: "mens",
+      },
+      {
+        name: "Womens",
+        value: "womens",
+      },
+    ],
+    handleChange: handleFilters,
+  };
+
+  const handleLoadMore = () => {
+    dispatch(
+      FetchProductStart({
+        filterType,
+        startAfterDoc: queryDoc,
+        persistProduct: data,
+      })
+    );
+  };
+
+  const configLoadMore = {
+    onLoadMoreEvn: handleLoadMore,
+  };
+
   return (
     <div className="products">
       <h1>Browse Product</h1>
+      <FormSelect {...configFilters} />
       <div className="productResults">
-      {product.map((products, pos) => {
-        const { productThumbnail, productName, productPrice } = products;
-        if (!productThumbnail || !productName ||
-          typeof productPrice === 'undefined') return null;
+        {data.map((products, pos) => {
+          const { productThumbnail, productName, productPrice } = products;
+          if (
+            !productThumbnail ||
+            !productName ||
+            typeof productPrice === "undefined"
+          )
+            return null;
 
-        const configProduct = {
-          productThumbnail,
-          productName,
-          productPrice,
-        };
-        return (
-          <Product key={pos} {...configProduct} />
-        );
-      })}
+          const configProduct = {
+            productThumbnail,
+            productName,
+            productPrice,
+          };
+          return <Product key={pos} {...configProduct} />;
+        })}
       </div>
+      {!isLastPage && (<LoadMore {...configLoadMore} />)}
     </div>
   );
 };

@@ -4,9 +4,9 @@ import { SetProduct, FetchProductStart } from './product.actions';
 import { auth } from "../../firebase/utils";
 import productTypes from "./product.types";
 
-export function* fectProduct() {
+export function* fectProduct({ payload }) {
     try{
-        const product = yield handleFetchProduct();
+        const product = yield handleFetchProduct(payload);
         yield put(
             SetProduct(product)
         )

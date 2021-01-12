@@ -15,19 +15,34 @@ export const handleAddProduct = product => {
     })
 }
 
-export const handleFetchProduct = () => {
+export const handleFetchProduct = ({ filterType, startAfterDoc, persistProduct=[] }) => {
     return new Promise((resolve, reject) => {
-        firestore
-            .collection('product')
+        const pageSize = 6;
+        
+        let ref = firestore.collection('product').limit(pageSize);
+
+        if (filterType) ref = ref.where('productCategory', '==', filterType);
+        if(startAfterDoc) ref = ref.startAfter(startAfterDoc)
+
+        ref
             .get()
             .then(snapshot => {
-                const productArray = snapshot.docs.map(doc => {
-                    return {
-                        ...doc.data(),
-                        documentID: doc.id
-                    }
-                })
-                resolve(productArray);
+                const totalCount = snapshot.size;
+
+                const data =  [
+                    ...persistProduct,
+                    ...snapshot.docs.map(doc => {
+                        return {
+                            ...doc.data(),
+                            documentID: doc.id
+                        }
+                    })
+                ]
+                resolve({
+                    data,
+                    queryDoc: snapshot.docs[totalCount - 1],
+                    isLastPage: totalCount < 1
+                });
             })
             .catch(err => {
                 reject(err)

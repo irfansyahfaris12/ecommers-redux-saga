@@ -5,6 +5,7 @@ import {
   FetchProductStart,
   DeleteProductStart,
 } from "../../redux/Product/product.actions";
+import CKEditor from "ckeditor4-react";
 import Modal from "../../component/Modal";
 import FormInput from "../../component/Form/FormInput";
 import FormSelect from "../../component/Form/FormSelect";
@@ -23,7 +24,8 @@ const Admin = () => {
   const [productCategory, setProductCategory] = useState("mens");
   const [productName, setProductName] = useState("");
   const [productThumbnail, setProductThumbnail] = useState("");
-  const [productPrice, setProductPrice] = useState(0);  
+  const [productPrice, setProductPrice] = useState(0);
+  const [productDesc, setProductDesc] = useState("");
 
   const { data, queryDoc, isLastPage } = product;
 
@@ -44,6 +46,7 @@ const Admin = () => {
     setProductName("");
     setProductThumbnail("");
     setProductPrice(0);
+    setProductDesc("");
   };
 
   const handleSubmit = (e) => {
@@ -55,6 +58,7 @@ const Admin = () => {
         productName,
         productThumbnail,
         productPrice,
+        productDesc,
       })
     );
     resetForm();
@@ -70,8 +74,8 @@ const Admin = () => {
   };
 
   const configLoadMore = {
-    onLoadMoreEvn: handleLoadMore
-  }
+    onLoadMoreEvn: handleLoadMore,
+  };
 
   return (
     <div className="admin">
@@ -125,6 +129,10 @@ const Admin = () => {
               step="0.01"
               value={productPrice}
               handleChange={(e) => setProductPrice(e.target.value)}
+            />
+
+            <CKEditor
+              onChange={(evt) => setProductDesc(evt.editor.getData())}
             />
 
             <br />
@@ -191,11 +199,7 @@ const Admin = () => {
                 <table border="0" cellPadding="0" cellSpacing="0">
                   <tbody>
                     <tr>
-                      <td>
-                        {!isLastPage &&(
-                          <LoadMore {...configLoadMore} />
-                        )}
-                      </td>
+                      <td>{!isLastPage && <LoadMore {...configLoadMore} />}</td>
                     </tr>
                   </tbody>
                 </table>

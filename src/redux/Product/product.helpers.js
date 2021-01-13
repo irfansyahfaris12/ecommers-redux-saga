@@ -50,6 +50,25 @@ export const handleFetchProduct = ({ filterType, startAfterDoc, persistProduct=[
     })
 }
 
+export const handleFetchProductDetail = productID => {
+    return new Promise((resolve, reject) => {
+        firestore
+            .collection('product')
+            .doc(productID)
+            .get()
+            .then(snapshot => {
+                if(snapshot.exists){
+                    resolve(
+                        snapshot.data()
+                    )
+                }
+            })
+            .catch(err => {
+                reject(err)
+            })
+    })
+}
+
 export const handleDeleteProduct = documentID => {
      return new Promise((resolve, reject) => {
          firestore

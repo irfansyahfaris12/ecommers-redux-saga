@@ -5,6 +5,7 @@ import {
   FetchProductDetailStart,
   setProductDetail,
 } from "../../redux/Product/product.actions";
+import { addProduct } from "../../redux/Cart/cart.actions"
 import Button from "../Form/Button";
 import "./styles.scss";
 
@@ -17,44 +18,59 @@ const ProductCard = () => {
   const dispatch = useDispatch();
   const { productDetail } = useSelector(mapState);
 
-  const { productName, productThumbnail, productPrice, productDesc } = productDetail;
+  const {
+    productName,
+    productThumbnail,
+    productPrice,
+    productDesc,
+  } = productDetail;
+
 
   useEffect(() => {
     dispatch(FetchProductDetailStart(productID));
 
     return () => {
-        dispatch(
-            setProductDetail({})
-        )
-    }
+      dispatch(setProductDetail({}));
+    };
   }, []);
 
+  const handleAddTocart = (product) => {
+      if(!product) return;
+    dispatch(
+        addProduct(product)
+    )
+  }
+
+  const configAddToCartBtn = {
+    type: "button",
+  };
 
   return (
     <div className="productCard">
-        <div className="hero">
-            <img src={productThumbnail} alt={productName} />
-        </div>
-        <div className="productDetail">
-            <ul>
-                <li>
-                    <h1>{productName}</h1>
-                </li>
-                <li>
-                    <span>$ {productPrice}</span>
-                </li>
-                <li>
-                    <span className="desc" dangerouslySetInnerHTML={{ __html: productDesc }} />
-                </li>
-                <li>
-                    <div className="addToCart">
-                        <Button  >
-                            Add to cart
-                        </Button>
-                    </div>
-                </li>
-            </ul>
-        </div>
+      <div className="hero">
+        <img src={productThumbnail} alt={productName} />
+      </div>
+      <div className="productDetail">
+        <ul>
+          <li>
+            <h1>{productName}</h1>
+          </li>
+          <li>
+            <span>$ {productPrice}</span>
+          </li>
+          <li>
+            <span
+              className="desc"
+              dangerouslySetInnerHTML={{ __html: productDesc }}
+            />
+          </li>
+          <li>
+            <div className="addToCart">
+              <Button {...configAddToCartBtn} onClick={() => handleAddTocart(productDesc)}>Add to cart</Button>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   );
 };

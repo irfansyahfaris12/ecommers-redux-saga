@@ -1,11 +1,12 @@
 import React from "react";
 import { useDispatch } from "react-redux"
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { addProduct } from "../../../redux/Cart/cart.actions";
 import Button from "../../Form/Button";
 
 const Product = (product) => {
   const dispatch = useDispatch();
+  const history = useHistory()
   const { documentID, productThumbnail, productName, productPrice } = product;
   if (
     !documentID ||
@@ -24,6 +25,7 @@ const Product = (product) => {
     dispatch(
       addProduct(product)
     )
+    history.push("/cart")
   }
   return (
     <div className="product">

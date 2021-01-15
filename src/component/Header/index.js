@@ -42,7 +42,7 @@ const Header = (props) => {
         <div className="cta">
           <ul>
             <li>
-              <Link>Your Cart({totalNumCartItem})</Link>
+              <Link to="/cart">Your Cart({totalNumCartItem})</Link>
             </li>
             {currentUser && [
               <li>
